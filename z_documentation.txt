@@ -1,0 +1,240 @@
+Laravel 12
+Configurar la BD
+    .env
+
+agregar en app/Providers/AppServiceProvider.php
+    use Illuminate\Support\Facades\Schema;
+    
+    public function boot(): void
+    {
+        // nueva línea
+        Schema::defaultStringLength(191);
+    }
+Ejecutar
+    php artisan migrate
+
+
+Paleta de colores:
+https://colorhunt.co/palettes/popular
+https://color.adobe.com/es/create/color-wheel
+https://javier.xyz/cohesive-colors/
+
+
+Cambiar tamaño de imagenes gratis
+https://picresize.com/
+Fotos gratis
+https://unsplash.com/
+
+https://richtexteditor.com/
+Textarea personalizado
+
+Instalar Materialize
+npm install materialize-css@next
+
+npm install @material-design-icons/font@latest
+https://fonts.google.com/icons?hl=es-419
+
+npm install @mdi/font
+https://pictogrammers.com/library/mdi/
+
+Instalar Jquery
+npm install jquery
+configurar css/js
+resources/css/app.js
+    @import "../../node_modules/materialize-css/dist/css/materialize.min.css";
+    @import "../../node_modules/@mdi/font/";
+    @import "../../node_modules/@material-design-icons/font/";
+    @import '../../node_modules/datatables.net-dt/css/dataTables.dataTables.min.css';
+    @import "estilos.css";
+
+resources/js/app.js
+    import "./bootstrap";
+
+    import 'materialize-css/dist/js/materialize.min.js';
+    import 'datatables.net-dt';
+
+    import "./jquery";
+    import "./jscript";
+
+resources/js/bootstrap.js
+    import axios from 'axios';
+    window.axios = axios;
+
+    window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+    import $ from 'jquery';
+    window.jQuery = $;
+    window.$ = $;
+
+Instalar DomPDF
+<!-- composer require dompdf/dompdf -->
+composer require barryvdh/laravel-dompdf
+
+
+Instalar DataTables
+npm install datatables.net-dt
+
+Crear disco virtual
+php artisan storage:link
+
+Cambio de idioma para mensajes
+php artisan lang:publish
+luego copy los archivos
+https://github.com/Laraveles/spanish/tree/master/resources/lang/es
+Cambiar en .env
+APP_LOCALE=es
+
+Cambiar zona horaria en .env
+APP_TIMEZONE=America/La_Paz
+De preferencia cambiar en config/app.php
+    'timezone' => 'America/La_Paz',
+    'locale' => 'es',
+Crear Middleware
+php artisan make:middleware ElNombre
+    
+    Agregar los middleware por debajo de los existentes
+    agregar en bootstrap/app.php
+        ->withMiddleware(function (Middleware $middleware) {
+            $middleware->alias([
+                'administrador' => AdministradorMiddleware::class,
+                'administrativo' => AdministrativoMiddleware::class,
+                'auxiliar' => AuxiliarMiddleware::class,
+                'docente' => DocenteMiddleware::class,
+                'estudiante' => EstudianteMiddleware::class,
+                .
+                .
+                .
+                Todos los existentes
+            ]);
+        })
+        NOTA: 
+            Los middleware a partir de la versión 11 ya no se pueden estructurar de la siguiente manera
+                public function __construct()
+                {
+                    $this->middleware('auth', ['except' => ['indice', 'autenticar']]);
+                    $this->middleware('guest', ['only' => ['indice', 'autenticar']]);
+                }
+            Para ello se puede compensar con
+                public function __construct()
+                {
+                    $this->middleware();
+                }
+                public static function middleware(): array
+                {
+                    return [
+                        new Middleware(middleware: 'auth', except: ['indice', 'autenticar']),
+                        new Middleware(middleware: 'guest', only: ['indice', 'autenticar']),
+                    ];
+                }
+            O bien restringiendo las rutas
+            Route::middleware(['auth', 'estudiante'])->group(function () {
+                lista de rutas    
+            });
+
+Para los Request
+php artisan make:request ElNombre
+luego verificar que:
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+
+
+
+Como pasar variables en blade
+https://desarrolloweb.com/articulos/componentes-anonimos-laravel-blade#:~:text=Podemos%20enviar%20datos%20a%20los,colocaremos%20cuando%20usemos%20el%20componente.&text=En%20este%20caso%20estamos%20enviando,usamos%20variables%20comunes%20de%20Blade.
+
+Convencion para nombrar archivos y métodos
+https://kennyhorna.com/blog/laravel-convenciones-de-nombrado-nombres-4ef5faa1-66eb-4122-a7fd-d4ec367c33d0
+
+Convención de nombres laravel
+https://kennyhorna.com/blog/laravel-convenciones-de-nombrado-nombres-4ef5faa1-66eb-4122-a7fd-d4ec367c33d0
+https://www.laraveltip.com/como-nombrar-clases-metodos-y-variables-en-laravel/
+
+inicializar el Modelo
+https://www.youtube.com/watch?v=UYc231QInck
+
+
+
+
+
+public function roleForUserIdRole($userId, $role)
+{
+    $roleForUserIdRole = Acceso::select('rol_nombre')
+                ->join('rol', 'rol_id', '=', 'acceso_rol_id')
+                ->where('acceso_usuario_id', $userId)
+                ->where('rol_nombre', "Auxiliar")
+                ->get();
+    return $roleForUserIdRole;
+}
+No pueden devolver vacio, siempre deben tener algun valor
+
+
+
+
+
+
+
+Para desactivar temporalmente la asignacion masiva
+app/Providers/AuthServiceProvider.php
+use Illuminate\Database\Eloquent\Model;
+public function boot(): void
+{
+    Model::unguard();
+}
+
+Para configurar el Modelo user
+config/auth.php
+'providers' => [
+    'users' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\User::class,//cambiar nombre de Modelo Actual Usuario
+    ],
+
+Nota: Auth::User() user no hace referencia al modelo usuario, por lo tanto debe mantener su valor de clase "User" no cambiar
+
+Auth::attempt(['usuario_usuario'=> $usuario, 'password' => $clave ], false)
+password mantiene su valor pero este se debe complementar con las siguientes lineas en el model "Usuario"
+    public function getAuthPassword()
+    {
+        return $this->usuario_clave;
+    }
+
+    usuario_usuario es el campo de la tabla Usuarios, este debe definirse en el Modelo Usuario en fillable o bien dejar pasar todos los parámetros
+    protected $fillable = [
+        'usuario_usuario',
+        'usuario_clave',
+    ];
+    // para laravel 11 se debe modificar vendor/laravel/framework/src/iluminate/Auth/Authenticable.php
+    buscar la variable authPasswordName
+    protected $authPasswordName = 'password'; y cambiar por
+    protected $authPasswordName = 'usuario_clave';
+
+    //(no realizado)
+    Por defecto el middleware para un usuario autenticado lo redireccionará a "/home"
+    este valor se lo puede cambiar en:
+    app/Http/Middleware en el archivo RedirectIfAuthenticated.php que esta conectado al siguiente archivo
+    app/Providers RouteServiceProvider.php ahi se debe cambiar en "public const HOME = '/home';"
+
+    Por defecto el middleware para un usuario no autenticado lo redireccionará a "/login"
+    este valor se lo puede cambiar en:
+    
+    bootstrap/app.php
+    use Illuminate\Http\Request;
+ 
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->redirectGuestsTo(fn (Request $request) => route('login'));
+    })
+    
+
+(no realizado) Agregar Libreria para convertir a PDF
+composer require spipu/html2pdf
+
+
+(no realizado) Problemas de vite 20_01_2025
+agregar en vite.config (https://github.com/laravel/vite-plugin/issues/316)
+    server: {
+        origin: 'http://localhost:5173',
+        cors: true
+    }

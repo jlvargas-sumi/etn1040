@@ -1,0 +1,5 @@
+@import "../../node_modules/materialize-css/dist/css/materialize.min.css";
+@import "../../node_modules/@mdi/font/";
+@import "../../node_modules/@material-design-icons/font/";
+@import '../../node_modules/datatables.net-dt/css/dataTables.dataTables.min.css';
+@import "estilos.css";

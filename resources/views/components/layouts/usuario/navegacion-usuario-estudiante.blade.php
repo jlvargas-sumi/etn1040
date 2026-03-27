@@ -1,0 +1,5 @@
+@if (session('rolActivoUsuario')->rol_nombre == 'Estudiante')
+    <li class="{{ request()->routeIs('estudiante.inscripciones') ? 'active':''}}"><a href="{{ route('estudiante.inscripciones') }}"><span class="contenedor-icono"><i class="material-icons izquierda">rule</i><span>Inscripciones</span></span></a></li>
+    <li class="{{ request()->routeIs(['estudiante.notas', 'estudiante.notas.detalle']) ? 'active':''}}"><a href="{{ route('estudiante.notas') }}"><span class="contenedor-icono"><i class="material-icons izquierda">library_books</i><span>Notas</span></span></a></li>
+    <li class="{{ request()->routeIs('estudiante.horarios') ? 'active':''}}"><a href="{{ route('estudiante.horarios') }}"><span class="contenedor-icono"><i class="material-icons izquierda">today</i><span>Mis Horarios</span></span></a></li>
+@endif

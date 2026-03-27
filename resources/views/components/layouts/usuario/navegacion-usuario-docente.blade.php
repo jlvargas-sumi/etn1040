@@ -1,0 +1,4 @@
+@if (session('rolActivoUsuario')->rol_nombre == 'Docente')
+    <li class="{{ request()->routeIs(['docente.docencias', 'docente.ponderaciones', 'docente.notas', 'docente.inscritos']) ? 'active':''}}"><a href="{{ route('docente.docencias') }}"><span class="contenedor-icono"><i class="material-icons izquierda">auto_stories</i><span>Docencias</span></span></a></li>
+    <li class="{{ request()->routeIs('docente.anuncios') ? 'active':''}}"><a href="{{ route('docente.anuncios') }}"><span class="contenedor-icono"><i class="material-icons izquierda">notifications</i><span>Anuncios</span></span></a></li>
+@endif
